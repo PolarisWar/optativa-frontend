@@ -1,33 +1,60 @@
 <template>
-  <div class="p-4">
-    <h1 class="text-4xl text-center my-4">Lista de Recetas</h1>
-    
-    <div class="text-center mb-4">
-      <NuxtLink to="/" class="text-blue-500 hover:underline">Volver al Home</NuxtLink>
+  <div class="min-h-screen bg-gradient-to-r from-gray-900 to-gray-800 p-6">
+    <div class="max-w-4xl mx-auto bg-gray-700 rounded-lg shadow-xl p-8">
+      <h1 class="text-5xl font-bold text-center text-green-400 mb-8">Lista de Recetas</h1>
+      
+      <div class="text-center mb-8">
+        <NuxtLink to="/" class="text-blue-400 hover:text-blue-300 transition duration-300 font-semibold">
+          ← Volver al Home
+        </NuxtLink>
+      </div>
+
+      <!-- Botón para mostrar el formulario de agregar receta -->
+      <div class="text-center mb-8">
+        <button @click="mostrarFormulario = true" class="bg-gradient-to-r from-green-400 to-teal-500 text-white py-3 px-6 rounded-lg hover:from-green-500 hover:to-teal-600 transition duration-300 font-semibold shadow-lg">
+          Agregar Receta
+        </button>
+      </div>
+
+      <!-- Formulario para agregar/editar recetas -->
+      <div v-if="mostrarFormulario" class="bg-gray-600 p-6 rounded-lg shadow-md mb-8">
+        <h2 class="text-3xl font-bold text-green-400 mb-6 text-center">
+          {{ recetaId ? 'Editar Receta' : 'Agregar Nueva Receta' }}
+        </h2>
+        <form @submit.prevent="recetaId ? actualizarReceta() : agregarReceta()" class="space-y-4">
+          <input v-model="receta_name" placeholder="Nombre de la receta" required class="w-full p-3 border border-gray-500 rounded-lg focus:ring-2 focus:ring-green-400 focus:outline-none transition duration-300 bg-gray-700 text-white" />
+          <input v-model="receta_descripcion" placeholder="Descripción" required class="w-full p-3 border border-gray-500 rounded-lg focus:ring-2 focus:ring-green-400 focus:outline-none transition duration-300 bg-gray-700 text-white" />
+          <textarea v-model="receta_instrucciones" placeholder="Instrucciones" required class="w-full p-3 border border-gray-500 rounded-lg focus:ring-2 focus:ring-green-400 focus:outline-none transition duration-300 bg-gray-700 text-white"></textarea>
+          <input v-model="tiempo_preparacion" type="number" placeholder="Tiempo de preparación (minutos)" required class="w-full p-3 border border-gray-500 rounded-lg focus:ring-2 focus:ring-green-400 focus:outline-none transition duration-300 bg-gray-700 text-white" />
+          <input v-model="categoriaId" type="number" placeholder="ID de categoría" required class="w-full p-3 border border-gray-500 rounded-lg focus:ring-2 focus:ring-green-400 focus:outline-none transition duration-300 bg-gray-700 text-white" />
+          <button type="submit" class="w-full bg-gradient-to-r from-green-400 to-teal-500 text-white py-3 rounded-lg hover:from-green-500 hover:to-teal-600 transition duration-300 font-semibold shadow-lg">
+            {{ recetaId ? 'Actualizar Receta' : 'Agregar Receta' }}
+          </button>
+          <button @click="cancelarFormulario" type="button" class="w-full bg-gradient-to-r from-gray-500 to-gray-600 text-white py-3 rounded-lg hover:from-gray-600 hover:to-gray-700 transition duration-300 font-semibold shadow-lg">
+            Cancelar
+          </button>
+        </form>
+      </div>
+
+      <!-- Lista de recetas existentes -->
+      <div class="bg-gray-600 p-6 rounded-lg shadow-md">
+        <h2 class="text-3xl font-bold text-green-400 mb-6 text-center">Recetas Existentes</h2>
+        <ul class="space-y-4">
+          <li v-for="receta in recetas" :key="receta.id" class="bg-gray-700 p-6 rounded-lg shadow-sm hover:shadow-md transition duration-300">
+            <div class="space-y-2">
+              <h3 class="text-2xl font-bold text-green-400">{{ receta.receta_name }}</h3>
+              <p class="text-gray-200">{{ receta.receta_descripcion }}</p>
+              <p class="text-gray-300"><span class="font-semibold">Instrucciones:</span> {{ receta.receta_instrucciones }}</p>
+              <p class="text-gray-300"><span class="font-semibold">Tiempo de preparación:</span> {{ receta.tiempo_preparacion }} minutos</p>
+              <div class="flex space-x-4 mt-4">
+                <button @click="editarReceta(receta)" class="bg-gradient-to-r from-blue-400 to-indigo-500 text-white px-4 py-2 rounded-lg hover:from-blue-500 hover:to-indigo-600 transition duration-300 shadow-lg">Editar</button>
+                <button @click="eliminarReceta(receta.id)" class="bg-gradient-to-r from-red-400 to-pink-500 text-white px-4 py-2 rounded-lg hover:from-red-500 hover:to-pink-600 transition duration-300 shadow-lg">Eliminar</button>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
     </div>
-
-    <h2 class="text-2xl text-center my-4">Agregar Nueva Receta</h2>
-    <form @submit.prevent="recetaId ? actualizarReceta() : agregarReceta()" class="mb-4">
-      <input v-model="receta_name" placeholder="Nombre de la receta" required class="border p-2 mb-2 w-full" />
-      <input v-model="receta_descripcion" placeholder="Descripción" required class="border p-2 mb-2 w-full" />
-      <textarea v-model="receta_instrucciones" placeholder="Instrucciones" required class="border p-2 mb-2 w-full"></textarea>
-      <input v-model="tiempo_preparacion" type="number" placeholder="Tiempo de preparación (minutos)" required class="border p-2 mb-2 w-full" />
-      <input v-model="categoriaId" type="number" placeholder="ID de categoría" required class="border p-2 mb-2 w-full" />
-      <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition">
-        {{ recetaId ? 'Actualizar Receta' : 'Agregar Receta' }}
-      </button>
-    </form>
-
-    <h2 class="text-2xl text-center my-4">Recetas Existentes</h2>
-    <ul class="list-disc pl-5">
-      <li v-for="receta in recetas" :key="receta.id" class="my-2">
-        <strong>{{ receta.receta_name }}</strong> - {{ receta.receta_descripcion }}<br />
-        <em>Instrucciones:</em> {{ receta.receta_instrucciones }}<br />
-        <em>Tiempo de preparación:</em> {{ receta.tiempo_preparacion }} minutos<br />
-        <button @click="editarReceta(receta)" class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 transition">Editar</button>
-        <button @click="eliminarReceta(receta.id)" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition">Eliminar</button>
-      </li>
-    </ul>
   </div>
 </template>
 
@@ -43,6 +70,7 @@ const receta_instrucciones = ref('')
 const tiempo_preparacion = ref('')
 const categoriaId = ref('')
 const recetaId = ref(null)
+const mostrarFormulario = ref(false)
 
 const obtenerRecetas = async () => {
   try {
@@ -78,6 +106,7 @@ const agregarReceta = async () => {
     
     await obtenerRecetas()
     limpiarFormulario()
+    mostrarFormulario.value = false
   } catch (error) {
     console.error('Error al agregar receta:', error)
   }
@@ -90,6 +119,7 @@ const editarReceta = (receta) => {
   receta_instrucciones.value = receta.receta_instrucciones
   tiempo_preparacion.value = receta.tiempo_preparacion
   categoriaId.value = receta.categoriaId
+  mostrarFormulario.value = true
 }
 
 const actualizarReceta = async () => {
@@ -113,6 +143,7 @@ const actualizarReceta = async () => {
 
     await obtenerRecetas()
     limpiarFormulario()
+    mostrarFormulario.value = false
   } catch (error) {
     console.error('Error al actualizar receta:', error)
   }
@@ -139,6 +170,11 @@ const limpiarFormulario = () => {
   receta_instrucciones.value = ''
   tiempo_preparacion.value = ''
   categoriaId.value = ''
+}
+
+const cancelarFormulario = () => {
+  limpiarFormulario()
+  mostrarFormulario.value = false
 }
 
 onMounted(obtenerRecetas)
