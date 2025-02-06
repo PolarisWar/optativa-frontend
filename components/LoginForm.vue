@@ -91,29 +91,29 @@ const handleSubmit = async () => {
       await signIn({
         credentials: credentials.value,
         password: password.value
-      }, { redirect: false })
+      }, { redirect: false });
     } else {
       const registrationData = {
-        userName: credentials.value,  // Changed from 'username' to 'userName'
+        username: credentials.value,  // Cambiado de 'userName' a 'username'
         email: email.value,
         password: password.value,
         rol: 'usuario'
-      }
+      };
 
-      console.log('Datos de registro:', registrationData)
+      console.log('Datos de registro:', registrationData);
       
-      await signUp(registrationData, { redirect: false })
+      await signUp(registrationData, { redirect: false });
 
       await signIn({
         credentials: credentials.value,
         password: password.value
-      }, { redirect: false })
+      }, { redirect: false });
     }
-    router.push('/')
+    router.push('/');
   } catch (error) {
-    console.error('Error completo:', error)
-    const berrorMessage = error.data?.message || (isLogin.value ? 'Error al iniciar sesión' : 'Error al registrarse')
-    errorMessage.value = berrorMessage
+    console.error('Error completo:', error);
+    const berrorMessage = error.data?.message || (isLogin.value ? 'Error al iniciar sesión' : 'Error al registrarse');
+    errorMessage.value = berrorMessage;
   }
 }
 </script>
