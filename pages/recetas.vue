@@ -69,8 +69,10 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import Swal from 'sweetalert2';
+import { useToast } from 'vue-toastification';
 
 const { token } = useAuth()
+const toast = useToast()
 
 const recetas = ref([])
 const categorias = ref([])
@@ -91,7 +93,10 @@ const obtenerRecetas = async () => {
     })
     recetas.value = response
   } catch (error) {
-    console.error('Error al obtener recetas:', error)
+    toast.error('🥑 Error al cargar recetas', {
+      timeout: 3000,
+      bodyClassName: 'text-gray-100'
+    })
   }
 }
 
@@ -104,7 +109,10 @@ const obtenerCategorias = async () => {
     });
     categorias.value = response;
   } catch (error) {
-    console.error('Error al obtener categorías:', error);
+    toast.error('🥕 Error al cargar categorías', {
+      timeout: 3000,
+      bodyClassName: 'text-gray-100'
+    })
   }
 };
 
@@ -130,8 +138,17 @@ const agregarReceta = async () => {
     await obtenerRecetas()
     limpiarFormulario()
     mostrarFormulario.value = false
+    
+    toast.success('🍳 ¡Receta agregada con éxito!', {
+      timeout: 3000,
+      icon: '👨🍳',
+      bodyClassName: 'text-gray-100'
+    })
   } catch (error) {
-    console.error('Error al agregar receta:', error)
+    toast.error('🔥 Error al guardar la receta', {
+      timeout: 3000,
+      bodyClassName: 'text-gray-100'
+    })
   }
 }
 
@@ -167,8 +184,17 @@ const actualizarReceta = async () => {
     await obtenerRecetas()
     limpiarFormulario()
     mostrarFormulario.value = false
+    
+    toast.success('📝 ¡Receta actualizada!', {
+      timeout: 3000,
+      icon: '✅',
+      bodyClassName: 'text-gray-100'
+    })
   } catch (error) {
-    console.error('Error al actualizar receta:', error)
+    toast.error('❌ Error al actualizar la receta', {
+      timeout: 3000,
+      bodyClassName: 'text-gray-100'
+    })
   }
 }
 
@@ -194,21 +220,16 @@ const eliminarReceta = async (id) => {
       });
       await obtenerRecetas();
 
-      // Mostrar mensaje de éxito
-      Swal.fire(
-        '¡Eliminado!',
-        'La receta ha sido eliminada.',
-        'success'
-      );
+      toast.success('🗑️ Receta eliminada', {
+        timeout: 3000,
+        icon: '⚠️',
+        bodyClassName: 'text-gray-100'
+      })
     } catch (error) {
-      console.error('Error al eliminar receta:', error);
-
-      // Mostrar mensaje de error
-      Swal.fire(
-        'Error',
-        'No se pudo eliminar la receta.',
-        'error'
-      );
+      toast.error('🚨 Error al eliminar la receta', {
+        timeout: 3000,
+        bodyClassName: 'text-gray-100'
+      })
     }
   }
 };
@@ -229,6 +250,6 @@ const cancelarFormulario = () => {
 
 onMounted(async () => {
   await obtenerRecetas();
-  await obtenerCategorias(); // Obtener categorías al cargar el componente
+  await obtenerCategorias();
 });
 </script>

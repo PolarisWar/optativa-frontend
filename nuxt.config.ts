@@ -81,5 +81,10 @@ export default defineNuxtConfig({
       allow404WithoutAuth: true
     }
   },
-  compatibilityDate: '2025-01-15'
+  compatibilityDate: '2025-01-15',
+
+  // Asegúrate de que el plugin esté registrado
+  plugins: [
+    '~/plugins/toastification.ts',
+  ],
 });
