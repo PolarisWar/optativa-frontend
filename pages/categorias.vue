@@ -55,7 +55,26 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import Swal from 'sweetalert2';
 const { token } = useAuth()
+
+useHead({
+  title: 'Categorías - RecipeHub',
+  meta: [
+    {
+      name: 'description',
+      content: 'Explora y gestiona las categorías de recetas en RecipeHub. Organiza tus recetas favoritas de manera sencilla.'
+    },
+    {
+      property: 'og:title',
+      content: 'Categorías - RecipeHub'
+    },
+    {
+      property: 'og:description',
+      content: 'Explora y gestiona las categorías de recetas en RecipeHub. Organiza tus recetas favoritas de manera sencilla.'
+    },
+  ]
+});
 
 // Referencias reactivas
 const categorias = ref([])
@@ -138,18 +157,45 @@ const actualizarCategoria = async () => {
 
 // Eliminar categoría
 const eliminarCategoria = async (id) => {
-  try {
-    await $fetch(`http://localhost:3001/categorias/${id}`, {
-      method: 'DELETE',
-      headers: {
-        'Authorization': token.value
-      }
-    })
-    await obtenerCategorias()
-  } catch (error) {
-    console.error('Error al eliminar categoría:', error)
+  const result = await Swal.fire({
+    title: '¿Estás seguro?',
+    text: '¡No podrás revertir esto!',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar',
+  });
+
+  if (result.isConfirmed) {
+    try {
+      await $fetch(`http://localhost:3001/categorias/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': token.value
+        }
+      });
+      await obtenerCategorias();
+
+      // Mostrar mensaje de éxito
+      Swal.fire(
+        '¡Eliminado!',
+        'La categoría ha sido eliminada.',
+        'success'
+      );
+    } catch (error) {
+      console.error('Error al eliminar categoría:', error);
+
+      // Mostrar mensaje de error
+      Swal.fire(
+        'Error',
+        'No se pudo eliminar la categoría.',
+        'error'
+      );
+    }
   }
-}
+};
 
 // Limpiar formulario
 const limpiarFormulario = () => {

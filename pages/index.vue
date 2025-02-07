@@ -50,14 +50,28 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import Navbar from '~/components/Navbar.vue';
 
-export default {
-  name: 'HomePage',
-  layout: 'default',
-  components: {
-    Navbar
-  }
-}
+useHead({
+  title: 'RecipeHub - Descubre, crea y comparte tus recetas favoritas',
+  meta: [
+    {
+      name: 'description',
+      content: 'RecipeHub es la plataforma perfecta para descubrir, crear y compartir recetas. Únete a nuestra comunidad y organiza tus recetas de manera sencilla.'
+    },
+    {
+      name: 'keywords',
+      content: 'recetas, cocina, ingredientes, categorías, comunidad culinaria, RecipeHub'
+    },
+    {
+      property: 'og:title',
+      content: 'RecipeHub - Descubre, crea y comparte tus recetas favoritas'
+    },
+    {
+      property: 'og:description',
+      content: 'RecipeHub es la plataforma perfecta para descubrir, crear y compartir recetas. Únete a nuestra comunidad y organiza tus recetas de manera sencilla.'
+    },
+  ]
+});
 </script>

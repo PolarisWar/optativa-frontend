@@ -60,6 +60,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import Swal from 'sweetalert2';
 
 const { token } = useAuth()
 
@@ -150,18 +151,45 @@ const actualizarReceta = async () => {
 }
 
 const eliminarReceta = async (id) => {
-  try {
-    await $fetch(`http://localhost:3001/recetas/${id}`, {
-      method: 'DELETE',
-      headers: {
-        'Authorization':  token.value
-      }
-    })
-    await obtenerRecetas()
-  } catch (error) {
-    console.error('Error al eliminar receta:', error)
+  const result = await Swal.fire({
+    title: '¿Estás seguro?',
+    text: '¡No podrás revertir esto!',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar',
+  });
+
+  if (result.isConfirmed) {
+    try {
+      await $fetch(`http://localhost:3001/recetas/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': token.value
+        }
+      });
+      await obtenerRecetas();
+
+      // Mostrar mensaje de éxito
+      Swal.fire(
+        '¡Eliminado!',
+        'La receta ha sido eliminada.',
+        'success'
+      );
+    } catch (error) {
+      console.error('Error al eliminar receta:', error);
+
+      // Mostrar mensaje de error
+      Swal.fire(
+        'Error',
+        'No se pudo eliminar la receta.',
+        'error'
+      );
+    }
   }
-}
+};
 
 const limpiarFormulario = () => {
   recetaId.value = null
