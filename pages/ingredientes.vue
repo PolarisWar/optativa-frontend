@@ -24,7 +24,19 @@
         <form @submit.prevent="ingredienteId ? actualizarIngrediente() : agregarIngrediente()" class="space-y-4">
           <input v-model="ingrediente_name" placeholder="Nombre del ingrediente" required class="w-full p-3 border border-gray-500 rounded-lg focus:ring-2 focus:ring-green-400 focus:outline-none transition duration-300 bg-gray-700 text-white" />
           <input v-model="unidad_medida" type="number" placeholder="Unidad de medida (gramos)" required class="w-full p-3 border border-gray-500 rounded-lg focus:ring-2 focus:ring-green-400 focus:outline-none transition duration-300 bg-gray-700 text-white" />
-          <input v-model="recetaId" type="number" placeholder="ID de receta" required class="w-full p-3 border border-gray-500 rounded-lg focus:ring-2 focus:ring-green-400 focus:outline-none transition duration-300 bg-gray-700 text-white" />
+          
+          <!-- Select de recetas -->
+          <select 
+            v-model="recetaId" 
+            required 
+            class="w-full p-3 border border-gray-500 rounded-lg focus:ring-2 focus:ring-green-400 focus:outline-none transition duration-300 bg-gray-700 text-white"
+          >
+            <option value="" disabled>Selecciona una receta</option>
+            <option v-for="receta in recetas" :key="receta.id" :value="receta.id">
+                      {{ receta.receta_name }} 
+            </option>
+          </select>
+
           <button type="submit" class="w-full bg-gradient-to-r from-green-400 to-teal-500 text-white py-3 rounded-lg hover:from-green-500 hover:to-teal-600 transition duration-300 font-semibold shadow-lg">
             {{ ingredienteId ? 'Actualizar' : 'Agregar' }}
           </button>
@@ -42,7 +54,7 @@
             <div class="space-y-2">
               <h3 class="text-2xl font-bold text-green-400">{{ ingrediente.ingredientes_name }}</h3>
               <p class="text-gray-300"><span class="font-semibold">Unidad de medida:</span> {{ ingrediente.unidad_medida }}g</p>
-              <p class="text-gray-300"><span class="font-semibold">Receta asociada:</span> #{{ ingrediente.recetaId }}</p>
+              <p class="text-gray-300"><span class="font-semibold">Receta asociada:</span> {{ obtenerNombreReceta(ingrediente.recetaId) }}</p>
               <div class="flex space-x-4 mt-4">
                 <button @click="editarIngrediente(ingrediente)" class="bg-gradient-to-r from-blue-400 to-indigo-500 text-white px-4 py-2 rounded-lg hover:from-blue-500 hover:to-indigo-600 transition duration-300 shadow-lg">Editar</button>
                 <button @click="eliminarIngrediente(ingrediente.id)" class="bg-gradient-to-r from-red-400 to-pink-500 text-white px-4 py-2 rounded-lg hover:from-red-500 hover:to-pink-600 transition duration-300 shadow-lg">Eliminar</button>
@@ -58,16 +70,49 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import Swal from 'sweetalert2';
+import { useToast } from 'vue-toastification';
 
 const { token } = useAuth()
+const toast = useToast()
 
 const ingredientes = ref([])
+const recetas = ref([]) // Nueva variable para almacenar recetas
 const ingrediente_name = ref('')
 const unidad_medida = ref('')
 const recetaId = ref('')
 const ingredienteId = ref(null)
-const mostrarFormulario = ref(false) // Control de visibilidad del formulario
+const mostrarFormulario = ref(false)
 
+// Función para obtener recetas
+const obtenerRecetas = async () => {
+  try {
+    const response = await $fetch('http://localhost:3001/recetas', {
+      headers: {
+        'Authorization': token.value
+      }
+    })
+    recetas.value = response
+  } catch (error) {
+    toast.error('🍲 Error al cargar recetas', {
+      timeout: 3000,
+      bodyClassName: 'text-gray-100'
+    })
+  }
+}
+
+// Función para obtener nombre de receta
+const obtenerNombreReceta = (idReceta) => {
+  const receta = recetas.value.find(r => r.id === idReceta)
+  return receta ? `${receta.receta_name} (ID: ${idReceta})` : 'Receta no encontrada'
+}
+
+// Modificar onMounted para cargar ambos datos
+onMounted(async () => {
+  await obtenerIngredientes()
+  await obtenerRecetas()
+})
+
+// Resto del código sin cambios...
 const obtenerIngredientes = async () => {
   try {
     const response = await $fetch('http://localhost:3001/ingredientes', {
@@ -77,7 +122,10 @@ const obtenerIngredientes = async () => {
     })
     ingredientes.value = response
   } catch (error) {
-    console.error('Error al obtener ingredientes:', error)
+    toast.error('🥑 Error al cargar ingredientes', {
+      timeout: 3000,
+      bodyClassName: 'text-gray-100'
+    })
   }
 }
 
@@ -101,8 +149,17 @@ const agregarIngrediente = async () => {
     await obtenerIngredientes()
     limpiarFormulario()
     mostrarFormulario.value = false
+    
+    toast.success('🥄 ¡Ingrediente agregado con éxito!', {
+      timeout: 3000,
+      icon: '🍴',
+      bodyClassName: 'text-gray-100'
+    })
   } catch (error) {
-    console.error('Error al agregar ingrediente:', error)
+    toast.error('🔥 Error al guardar el ingrediente', {
+      timeout: 3000,
+      bodyClassName: 'text-gray-100'
+    })
   }
 }
 
@@ -134,8 +191,17 @@ const actualizarIngrediente = async () => {
     await obtenerIngredientes()
     limpiarFormulario()
     mostrarFormulario.value = false
+    
+    toast.success('📝 ¡Ingrediente actualizado!', {
+      timeout: 3000,
+      icon: '✅',
+      bodyClassName: 'text-gray-100'
+    })
   } catch (error) {
-    console.error('Error al actualizar ingrediente:', error)
+    toast.error('❌ Error al actualizar el ingrediente', {
+      timeout: 3000,
+      bodyClassName: 'text-gray-100'
+    })
   }
 }
 
@@ -161,21 +227,16 @@ const eliminarIngrediente = async (id) => {
       });
       await obtenerIngredientes();
 
-      // Mostrar mensaje de éxito
-      Swal.fire(
-        '¡Eliminado!',
-        'El ingrediente ha sido eliminado.',
-        'success'
-      );
+      toast.success('🗑️ Ingrediente eliminado', {
+        timeout: 3000,
+        icon: '⚠️',
+        bodyClassName: 'text-gray-100'
+      })
     } catch (error) {
-      console.error('Error al eliminar ingrediente:', error);
-
-      // Mostrar mensaje de error
-      Swal.fire(
-        'Error',
-        'No se pudo eliminar el ingrediente.',
-        'error'
-      );
+      toast.error('🚨 Error al eliminar el ingrediente', {
+        timeout: 3000,
+        bodyClassName: 'text-gray-100'
+      })
     }
   }
 };
@@ -191,6 +252,4 @@ const cancelarFormulario = () => {
   limpiarFormulario()
   mostrarFormulario.value = false
 }
-
-onMounted(obtenerIngredientes)
 </script>

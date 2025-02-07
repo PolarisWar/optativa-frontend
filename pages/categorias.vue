@@ -56,34 +56,17 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import Swal from 'sweetalert2';
+import { useToast } from 'vue-toastification';
+
 const { token } = useAuth()
+const toast = useToast()
 
-useHead({
-  title: 'Categorías - RecipeHub',
-  meta: [
-    {
-      name: 'description',
-      content: 'Explora y gestiona las categorías de recetas en RecipeHub. Organiza tus recetas favoritas de manera sencilla.'
-    },
-    {
-      property: 'og:title',
-      content: 'Categorías - RecipeHub'
-    },
-    {
-      property: 'og:description',
-      content: 'Explora y gestiona las categorías de recetas en RecipeHub. Organiza tus recetas favoritas de manera sencilla.'
-    },
-  ]
-});
-
-// Referencias reactivas
 const categorias = ref([])
 const categoria_name = ref('')
 const categoria_descripcion = ref('')
 const categoriaId = ref(null)
 const mostrarFormulario = ref(false)
 
-// Obtener categorías
 const obtenerCategorias = async () => {
   try {
     const response = await $fetch('http://localhost:3001/categorias', {
@@ -93,11 +76,13 @@ const obtenerCategorias = async () => {
     })
     categorias.value = response
   } catch (error) {
-    console.error('Error al obtener categorías:', error)
+    toast.error('🥬 Error al cargar categorías', {
+      timeout: 3000,
+      bodyClassName: 'text-gray-100'
+    })
   }
 }
 
-// Agregar categoría
 const agregarCategoria = async () => {
   try {
     const nuevaCategoria = {
@@ -117,12 +102,20 @@ const agregarCategoria = async () => {
     await obtenerCategorias()
     limpiarFormulario()
     mostrarFormulario.value = false
+    
+    toast.success('📂 ¡Categoría agregada con éxito!', {
+      timeout: 3000,
+      icon: '📁',
+      bodyClassName: 'text-gray-100'
+    })
   } catch (error) {
-    console.error('Error al agregar categoría:', error)
+    toast.error('🔥 Error al guardar la categoría', {
+      timeout: 3000,
+      bodyClassName: 'text-gray-100'
+    })
   }
 }
 
-// Editar categoría
 const editarCategoria = (categoria) => {
   categoriaId.value = categoria.id
   categoria_name.value = categoria.categoria_name
@@ -130,9 +123,8 @@ const editarCategoria = (categoria) => {
   mostrarFormulario.value = true
 }
 
-// Actualizar categoría
 const actualizarCategoria = async () => {
-  try {       
+  try {
     const categoriaActualizada = {
       categoria_name: categoria_name.value,
       categoria_descripcion: categoria_descripcion.value,
@@ -150,12 +142,20 @@ const actualizarCategoria = async () => {
     await obtenerCategorias()
     limpiarFormulario()
     mostrarFormulario.value = false
+    
+    toast.success('📝 ¡Categoría actualizada!', {
+      timeout: 3000,
+      icon: '✅',
+      bodyClassName: 'text-gray-100'
+    })
   } catch (error) {
-    console.error('Error al actualizar categoría:', error)
+    toast.error('❌ Error al actualizar la categoría', {
+      timeout: 3000,
+      bodyClassName: 'text-gray-100'
+    })
   }
 }
 
-// Eliminar categoría
 const eliminarCategoria = async (id) => {
   const result = await Swal.fire({
     title: '¿Estás seguro?',
@@ -178,38 +178,30 @@ const eliminarCategoria = async (id) => {
       });
       await obtenerCategorias();
 
-      // Mostrar mensaje de éxito
-      Swal.fire(
-        '¡Eliminado!',
-        'La categoría ha sido eliminada.',
-        'success'
-      );
+      toast.success('🗑️ Categoría eliminada', {
+        timeout: 3000,
+        icon: '⚠️',
+        bodyClassName: 'text-gray-100'
+      })
     } catch (error) {
-      console.error('Error al eliminar categoría:', error);
-
-      // Mostrar mensaje de error
-      Swal.fire(
-        'Error',
-        'No se pudo eliminar la categoría.',
-        'error'
-      );
+      toast.error('🚨 Error al eliminar la categoría', {
+        timeout: 3000,
+        bodyClassName: 'text-gray-100'
+      })
     }
   }
 };
 
-// Limpiar formulario
 const limpiarFormulario = () => {
   categoria_name.value = ''
   categoria_descripcion.value = ''
   categoriaId.value = null
 }
 
-// Cancelar formulario
 const cancelarFormulario = () => {
   limpiarFormulario()
   mostrarFormulario.value = false
 }
 
-// Cargar categorías al montar el componente
 onMounted(obtenerCategorias)
 </script>
