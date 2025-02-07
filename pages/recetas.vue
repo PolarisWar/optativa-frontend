@@ -26,7 +26,15 @@
           <input v-model="receta_descripcion" placeholder="Descripción" required class="w-full p-3 border border-gray-500 rounded-lg focus:ring-2 focus:ring-green-400 focus:outline-none transition duration-300 bg-gray-700 text-white" />
           <textarea v-model="receta_instrucciones" placeholder="Instrucciones" required class="w-full p-3 border border-gray-500 rounded-lg focus:ring-2 focus:ring-green-400 focus:outline-none transition duration-300 bg-gray-700 text-white"></textarea>
           <input v-model="tiempo_preparacion" type="number" placeholder="Tiempo de preparación (minutos)" required class="w-full p-3 border border-gray-500 rounded-lg focus:ring-2 focus:ring-green-400 focus:outline-none transition duration-300 bg-gray-700 text-white" />
-          <input v-model="categoriaId" type="number" placeholder="ID de categoría" required class="w-full p-3 border border-gray-500 rounded-lg focus:ring-2 focus:ring-green-400 focus:outline-none transition duration-300 bg-gray-700 text-white" />
+          
+          <!-- Select para elegir la categoría -->
+          <select v-model="categoriaId" required class="w-full p-3 border border-gray-500 rounded-lg focus:ring-2 focus:ring-green-400 focus:outline-none transition duration-300 bg-gray-700 text-white">
+            <option value="" disabled>Selecciona una categoría</option>
+            <option v-for="categoria in categorias" :key="categoria.id" :value="categoria.id">
+              {{ categoria.categoria_name }}
+            </option>
+          </select>
+
           <button type="submit" class="w-full bg-gradient-to-r from-green-400 to-teal-500 text-white py-3 rounded-lg hover:from-green-500 hover:to-teal-600 transition duration-300 font-semibold shadow-lg">
             {{ recetaId ? 'Actualizar Receta' : 'Agregar Receta' }}
           </button>
@@ -65,6 +73,7 @@ import Swal from 'sweetalert2';
 const { token } = useAuth()
 
 const recetas = ref([])
+const categorias = ref([])
 const receta_name = ref('')
 const receta_descripcion = ref('')
 const receta_instrucciones = ref('')
@@ -85,6 +94,19 @@ const obtenerRecetas = async () => {
     console.error('Error al obtener recetas:', error)
   }
 }
+
+const obtenerCategorias = async () => {
+  try {
+    const response = await $fetch('http://localhost:3001/categorias', {
+      headers: {
+        'Authorization': token.value
+      }
+    });
+    categorias.value = response;
+  } catch (error) {
+    console.error('Error al obtener categorías:', error);
+  }
+};
 
 const agregarReceta = async () => {
   try {
@@ -205,5 +227,8 @@ const cancelarFormulario = () => {
   mostrarFormulario.value = false
 }
 
-onMounted(obtenerRecetas)
+onMounted(async () => {
+  await obtenerRecetas();
+  await obtenerCategorias(); // Obtener categorías al cargar el componente
+});
 </script>
