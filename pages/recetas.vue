@@ -54,6 +54,10 @@
               <p class="text-gray-200">{{ receta.receta_descripcion }}</p>
               <p class="text-gray-300"><span class="font-semibold">Instrucciones:</span> {{ receta.receta_instrucciones }}</p>
               <p class="text-gray-300"><span class="font-semibold">Tiempo de preparación:</span> {{ receta.tiempo_preparacion }} minutos</p>
+              <p class="text-gray-300">
+                  <span class="font-semibold">Categoría:</span> 
+                    {{ categorias.find(cat => cat.id === receta.categoriaId)?.categoria_name || 'Sin categoría' }}
+              </p>
               <div class="flex space-x-4 mt-4">
                 <button @click="editarReceta(receta)" class="bg-gradient-to-r from-blue-400 to-indigo-500 text-white px-4 py-2 rounded-lg hover:from-blue-500 hover:to-indigo-600 transition duration-300 shadow-lg">Editar</button>
                 <button @click="eliminarReceta(receta.id)" class="bg-gradient-to-r from-red-400 to-pink-500 text-white px-4 py-2 rounded-lg hover:from-red-500 hover:to-pink-600 transition duration-300 shadow-lg">Eliminar</button>

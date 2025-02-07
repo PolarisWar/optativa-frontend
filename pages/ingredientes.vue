@@ -100,10 +100,18 @@ const obtenerRecetas = async () => {
   }
 }
 
-// Función para obtener nombre de receta
 const obtenerNombreReceta = (idReceta) => {
-  const receta = recetas.value.find(r => r.id === idReceta)
-  return receta ? `${receta.receta_name} (ID: ${idReceta})` : 'Receta no encontrada'
+  // 1. Búsqueda segura con optional chaining
+  const receta = recetas.value?.find(r => r.id === idReceta)
+  
+  // 2. Validación mejorada con mensaje de error descriptivo
+  if (!receta) {
+    console.error(`Receta con ID ${idReceta} no encontrada`)
+    return 'Receta no disponible'
+  }
+  
+  // 3. Devolver solo el nombre (sin ID)
+  return receta.receta_name
 }
 
 // Modificar onMounted para cargar ambos datos
