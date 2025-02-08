@@ -99,34 +99,24 @@ const handleSubmit = async () => {
         password: password.value,
         rol: 'usuario'
       };
-      
-      console.log('Datos de registro a enviar:', registrationData);
-      
+
       // Registramos al usuario
-      const response = await signUp(registrationData, { redirect: false });
-      console.log('Registro exitoso:', response);
+      await signUp({ ...registrationData, credentials: registrationData.userName }, { redirect: false });
       
-      // Esperamos un momento antes de intentar el login
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Aseguramos que los datos de login coincidan exactamente con lo que espera el backend
-      const loginData = {
-        credentials: registrationData.userName,  // Usamos el userName para mantener consistencia
-        password: registrationData.password
-      };
-      
-      console.log('Datos de login a enviar:', loginData);
-      
-      await signIn(loginData, { redirect: false });
+      // Después del registro exitoso, iniciamos sesión automáticamente
+      await signIn({
+        credentials: credentials.value,
+        password: password.value
+      }, { redirect: false });
     }
-    router.push('/');
-  } catch (error) {
-    console.error('Error completo:', error);
-    console.error('Respuesta del servidor:', error.data);
     
+    // Solo redirigimos si todo el proceso fue exitoso
+    await router.push('/');
+  } catch (error) {
+    console.error('Error:', error);
     const berrorMessage = error.data?.message || 
-                         error.message || 
-                         (isLogin.value ? 'Error al iniciar sesión' : 'Error al registrarse');
+      error.message || 
+      (isLogin.value ? 'Error al iniciar sesión' : 'Error al registrarse');
     errorMessage.value = berrorMessage;
   }
 }
