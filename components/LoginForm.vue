@@ -94,25 +94,39 @@ const handleSubmit = async () => {
       }, { redirect: false });
     } else {
       const registrationData = {
-        username: credentials.value,  // Cambiado de 'userName' a 'username'
-        email: email.value,
+        userName: credentials.value,
+        correoElectronico: email.value,
         password: password.value,
         rol: 'usuario'
       };
-
-      console.log('Datos de registro:', registrationData);
       
-      await signUp(registrationData, { redirect: false });
-
-      await signIn({
-        credentials: credentials.value,
-        password: password.value
-      }, { redirect: false });
+      console.log('Datos de registro a enviar:', registrationData);
+      
+      // Registramos al usuario
+      const response = await signUp(registrationData, { redirect: false });
+      console.log('Registro exitoso:', response);
+      
+      // Esperamos un momento antes de intentar el login
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Aseguramos que los datos de login coincidan exactamente con lo que espera el backend
+      const loginData = {
+        credentials: registrationData.userName,  // Usamos el userName para mantener consistencia
+        password: registrationData.password
+      };
+      
+      console.log('Datos de login a enviar:', loginData);
+      
+      await signIn(loginData, { redirect: false });
     }
     router.push('/');
   } catch (error) {
     console.error('Error completo:', error);
-    const berrorMessage = error.data?.message || (isLogin.value ? 'Error al iniciar sesión' : 'Error al registrarse');
+    console.error('Respuesta del servidor:', error.data);
+    
+    const berrorMessage = error.data?.message || 
+                         error.message || 
+                         (isLogin.value ? 'Error al iniciar sesión' : 'Error al registrarse');
     errorMessage.value = berrorMessage;
   }
 }

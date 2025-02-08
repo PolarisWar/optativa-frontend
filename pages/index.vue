@@ -6,16 +6,16 @@
       <div class="absolute inset-0 bg-black bg-opacity-50"></div>
       
       <div class="relative z-10 text-center px-4">
-        <h1 class="text-6xl font-bold mb-6">Bienvenido a RecipeHub</h1>
-        <p class="text-xl mb-8">Descubre, crea y comparte tus recetas favoritas con nuestra comunidad.</p>
-        <div class="space-x-4">
-          <NuxtLink to="/recetas" class="bg-gradient-to-r from-green-400 to-teal-500 text-white px-6 py-3 rounded-lg hover:from-green-500 hover:to-teal-600 transition duration-300 shadow-lg">
+        <h1 class="text-4xl md:text-6xl font-bold mb-6">Bienvenido a RecipeHub</h1>
+        <p class="text-lg md:text-xl mb-8">Descubre, crea y comparte tus recetas favoritas con nuestra comunidad.</p>
+        <div class="flex flex-col md:flex-row gap-4 w-full max-w-md md:max-w-none mx-auto">
+          <NuxtLink to="/recetas" class="w-full md:w-auto bg-gradient-to-r from-green-400 to-teal-500 text-white px-4 md:px-6 py-3 rounded-lg hover:from-green-500 hover:to-teal-600 transition duration-300 shadow-lg text-sm md:text-base">
             Explorar Recetas
           </NuxtLink>
-          <NuxtLink to="/categorias" class="bg-gradient-to-r from-blue-400 to-indigo-500 text-white px-6 py-3 rounded-lg hover:from-blue-500 hover:to-indigo-600 transition duration-300 shadow-lg">
+          <NuxtLink to="/categorias" class="w-full md:w-auto bg-gradient-to-r from-blue-400 to-indigo-500 text-white px-4 md:px-6 py-3 rounded-lg hover:from-blue-500 hover:to-indigo-600 transition duration-300 shadow-lg text-sm md:text-base">
             Ver Categorías
           </NuxtLink>
-          <NuxtLink to="/ingredientes" class="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-6 py-3 rounded-lg hover:from-yellow-500 hover:to-orange-600 transition duration-300 shadow-lg">
+          <NuxtLink to="/ingredientes" class="w-full md:w-auto bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 md:px-6 py-3 rounded-lg hover:from-yellow-500 hover:to-orange-600 transition duration-300 shadow-lg text-sm md:text-base">
             Ver Ingredientes
           </NuxtLink>
         </div>
