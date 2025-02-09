@@ -89,6 +89,39 @@ const categoriaId = ref('')
 const recetaId = ref(null)
 const mostrarFormulario = ref(false)
 
+useHead({
+  title: 'Recetas | Cocina Creativa - Descubre Platos Únicos',
+  meta: [
+    { 
+      name: 'description', 
+      content: 'Explora nuestra colección de recetas exclusivas con instrucciones detalladas, tiempos de preparación y categorías culinarias. ¡Aprende a cocinar como un chef profesional!'
+    },
+    { property: 'og:title', content: 'Recetas | Cocina Creativa - Descubre Platos Únicos' },
+    { property: 'og:description', content: 'Colección de recetas gourmet con instrucciones paso a paso' },
+    { property: 'og:type', content: 'website' }
+  ],
+  link: [{ rel: 'canonical', href: `${config.public.BACKEND_URL}/recetas` }]
+})
+
+const generarSchemaMarkup = () => {
+  return recetas.value.map(receta => ({
+    '@context': 'https://schema.org',
+    '@type': 'Recipe',
+    name: receta.receta_name,
+    description: receta.receta_descripcion,
+    recipeInstructions: receta.receta_instrucciones,
+    prepTime: `PT${receta.tiempo_preparacion}M`,
+    recipeCategory: categorias.value.find(cat => cat.id === receta.categoriaId)?.categoria_name,
+  }))
+}
+
+useServerSeoMeta({
+  script: () => generarSchemaMarkup().map(data => ({
+    type: 'application/ld+json',
+    innerHTML: JSON.stringify(data)
+  }))
+})
+
 const obtenerRecetas = async () => {
   try {
     const response = await $fetch(`${config.public.BACKEND_URL}/recetas`, {
