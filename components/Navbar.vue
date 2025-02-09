@@ -49,6 +49,7 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useAuth } from '#imports';
 
 const { signOut, getSession } = useAuth();
 const router = useRouter();
