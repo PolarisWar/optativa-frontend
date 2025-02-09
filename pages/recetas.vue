@@ -103,18 +103,6 @@ useHead({
   link: [{ rel: 'canonical', href: `${config.public.BACKEND_URL}/recetas` }]
 })
 
-const generarSchemaMarkup = () => {
-  return recetas.value.map(receta => ({
-    '@context': 'https://schema.org',
-    '@type': 'Recipe',
-    name: receta.receta_name,
-    description: receta.receta_descripcion,
-    recipeInstructions: receta.receta_instrucciones,
-    prepTime: `PT${receta.tiempo_preparacion}M`,
-    recipeCategory: categorias.value.find(cat => cat.id === receta.categoriaId)?.categoria_name,
-  }))
-}
-
 useServerSeoMeta({
   script: () => generarSchemaMarkup().map(data => ({
     type: 'application/ld+json',

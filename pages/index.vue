@@ -2,7 +2,6 @@
   <div class="min-h-screen bg-gray-900 text-white">
     <Navbar />
 
-    <div class="relative flex flex-col items-center justify-center h-screen bg-cover bg-center" style="background-image: url('/kitchen-background.jpg');">
       <div class="absolute inset-0 bg-black bg-opacity-50"></div>
       
       <div class="relative z-10 text-center px-4">
@@ -20,7 +19,6 @@
           </NuxtLink>
         </div>
       </div>
-    </div>
 
     <div class="py-12 bg-gray-800">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
