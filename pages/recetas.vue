@@ -77,6 +77,7 @@ import { useToast } from 'vue-toastification';
 
 const { token } = useAuth()
 const toast = useToast()
+const config = useRuntimeConfig()
 
 const recetas = ref([])
 const categorias = ref([])
@@ -90,7 +91,7 @@ const mostrarFormulario = ref(false)
 
 const obtenerRecetas = async () => {
   try {
-    const response = await $fetch('http://localhost:3001/recetas', {
+    const response = await $fetch(`${config.public.BACKEND_URL}/recetas`, {
       headers: {
         'Authorization': token.value
       }
@@ -106,7 +107,7 @@ const obtenerRecetas = async () => {
 
 const obtenerCategorias = async () => {
   try {
-    const response = await $fetch('http://localhost:3001/categorias', {
+    const response = await $fetch(`${config.public.BACKEND_URL}/categorias`, {
       headers: {
         'Authorization': token.value
       }
@@ -130,7 +131,7 @@ const agregarReceta = async () => {
       categoriaId: categoriaId.value,
     }
     
-    await $fetch('http://localhost:3001/recetas', {
+    await $fetch(`${config.public.BACKEND_URL}/recetas`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -176,7 +177,7 @@ const actualizarReceta = async () => {
       categoriaId: categoriaId.value,
     }
 
-    await $fetch(`http://localhost:3001/recetas/${recetaId.value}`, {
+    await $fetch(`${config.public.BACKEND_URL}/recetas/${recetaId.value}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -216,7 +217,7 @@ const eliminarReceta = async (id) => {
 
   if (result.isConfirmed) {
     try {
-      await $fetch(`http://localhost:3001/recetas/${id}`, {
+      await $fetch(`${config.public.BACKEND_URL}/recetas/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': token.value

@@ -60,6 +60,7 @@ import { useToast } from 'vue-toastification';
 
 const { token } = useAuth()
 const toast = useToast()
+const config = useRuntimeConfig()
 
 const categorias = ref([])
 const categoria_name = ref('')
@@ -69,7 +70,7 @@ const mostrarFormulario = ref(false)
 
 const obtenerCategorias = async () => {
   try {
-    const response = await $fetch('http://localhost:3001/categorias', {
+    const response = await $fetch(`${config.public.BACKEND_URL}/categorias`, {
       headers: {
         'Authorization': token.value
       }
@@ -90,7 +91,7 @@ const agregarCategoria = async () => {
       categoria_descripcion: categoria_descripcion.value,
     }
     
-    await $fetch('http://localhost:3001/categorias', {
+    await $fetch(`${config.public.BACKEND_URL}/categorias`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -130,7 +131,7 @@ const actualizarCategoria = async () => {
       categoria_descripcion: categoria_descripcion.value,
     }
 
-    await $fetch(`http://localhost:3001/categorias/${categoriaId.value}`, {
+    await $fetch(`${config.public.BACKEND_URL}/categorias/${categoriaId.value}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -170,7 +171,7 @@ const eliminarCategoria = async (id) => {
 
   if (result.isConfirmed) {
     try {
-      await $fetch(`http://localhost:3001/categorias/${id}`, {
+      await $fetch(`${config.public.BACKEND_URL}/categorias/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': token.value

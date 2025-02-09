@@ -74,6 +74,7 @@ import { useToast } from 'vue-toastification';
 
 const { token } = useAuth()
 const toast = useToast()
+const config = useRuntimeConfig()
 
 const ingredientes = ref([])
 const recetas = ref([]) // Nueva variable para almacenar recetas
@@ -86,7 +87,7 @@ const mostrarFormulario = ref(false)
 // Función para obtener recetas
 const obtenerRecetas = async () => {
   try {
-    const response = await $fetch('http://localhost:3001/recetas', {
+    const response = await $fetch(`${config.public.BACKEND_URL}/recetas`, {
       headers: {
         'Authorization': token.value
       }
@@ -123,7 +124,7 @@ onMounted(async () => {
 // Resto del código sin cambios...
 const obtenerIngredientes = async () => {
   try {
-    const response = await $fetch('http://localhost:3001/ingredientes', {
+    const response = await $fetch(`${config.public.BACKEND_URL}/ingredientes`, {
       headers: {
         'Authorization': token.value
       }
@@ -145,7 +146,7 @@ const agregarIngrediente = async () => {
       recetaId: recetaId.value,
     }
     
-    await $fetch('http://localhost:3001/ingredientes', {
+    await $fetch(`${config.public.BACKEND_URL}/ingredientes`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -187,7 +188,7 @@ const actualizarIngrediente = async () => {
       recetaId: recetaId.value,
     }
 
-    await $fetch(`http://localhost:3001/ingredientes/${ingredienteId.value}`, {
+    await $fetch(`${config.public.BACKEND_URL}/ingredientes/${ingredienteId.value}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -227,7 +228,7 @@ const eliminarIngrediente = async (id) => {
 
   if (result.isConfirmed) {
     try {
-      await $fetch(`http://localhost:3001/ingredientes/${id}`, {
+      await $fetch(`${config.public.BACKEND_URL}/ingredientes/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': token.value
