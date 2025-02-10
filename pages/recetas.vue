@@ -103,13 +103,6 @@ useHead({
   link: [{ rel: 'canonical', href: `${config.public.BACKEND_URL}/recetas` }]
 })
 
-useServerSeoMeta({
-  script: () => generarSchemaMarkup().map(data => ({
-    type: 'application/ld+json',
-    innerHTML: JSON.stringify(data)
-  }))
-})
-
 const obtenerRecetas = async () => {
   try {
     const response = await $fetch(`${config.public.BACKEND_URL}/recetas`, {
